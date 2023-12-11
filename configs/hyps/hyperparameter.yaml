@@ -1,0 +1,34 @@
+image_size: 480
+train_aug: True
+test_aug: True
+episode_size: 1
+test_episode_size: 1
+
+
+# Important
+epochs: 30
+start_epoch: 1
+episode_train_num: 10000
+episode_val_num: 1000
+episode_test_num: 1000
+way_num: 5
+shot_num: 1
+query_num: 15
+aug_shot_num: 20
+neighbor_k: 3
+
+# Other parameters
+lr: 0.001
+cosine: True
+lr_decay_epochs: [60, 80]
+lr_decay_rate: 0.1
+weight_decay: 5e-4
+momentum: 0.9
+adam: True
+beta1: 0.5
+cuda: False
+ngpu: 1
+nc: 3
+clamp_lower: 0.01
+clamp_upper: 0.01
+print_freq: 100

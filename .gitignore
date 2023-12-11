@@ -1,0 +1,10 @@
+.DS_Store
+*.jpg
+*.csv
+*.json
+DN4
+**__pycache__**
+*.ipynb
+ipynb_checkpoints
+mlruns
+outputs
