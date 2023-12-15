@@ -43,8 +43,8 @@ class Prototype_Metric(nn.Module):
    
 
 		# input2--support set
-		input2 = self.avgpool(input2).squeeze(3).squeeze(2)                          # 25 * 64
-		# input2 = input2.view(input2.size(0), -1)                                   # 25 * 1600     
+		input2 = self.avgpool(input2).squeeze(3).squeeze(2)                         # 25 * 64
+		# input2 = input2.view(input2.size(0), -1)                                   # 25 * 1600
 		support_set = input2.contiguous().view(self.way_num, -1, input2.size(1))     # 5 * 5 * 1600    
 		support_set = torch.mean(support_set, 1)                                     # 5 * 1600
 

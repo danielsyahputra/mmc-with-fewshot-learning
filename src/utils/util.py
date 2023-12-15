@@ -36,8 +36,9 @@ def count_parameters(model):
 	return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-def save_checkpoint(state, filename='checkpoint.pth.tar'):
-	torch.save(state, filename)
+def save_checkpoint(state, path='checkpoint.pth.tar'):
+	os.makedirs(path, exist_ok=True)
+	torch.save(state, f"{path}/checkpoint.pth.tar")
 	
 
 class AverageMeter(object):

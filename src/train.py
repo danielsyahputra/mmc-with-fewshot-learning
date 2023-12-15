@@ -36,7 +36,6 @@ from src.utils import AverageMeter, accuracy, adjust_learning_rate, save_checkpo
 from src.dataset import FewShotDataset, get_dataloader
 from src.models.network import define_model
 
-
 def train(cfg, loader, model, criterion, optimizer, epoch_index, device=torch.device("cpu")):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -48,7 +47,10 @@ def train(cfg, loader, model, criterion, optimizer, epoch_index, device=torch.de
     for episode_index, (query_images, query_targets, support_images, support_targets) in enumerate(loader):
         data_time.update(time.time() - end)
 
-        input_var1 = torch.cat(query_images, 0).to(device)
+        try:
+            input_var1 = torch.cat(query_images, 0).to(device)
+        except:
+            print(query_images)
         input_var2 = torch.cat(support_images, 0).squeeze(0).to(device)
         input_var2 = input_var2.contiguous().view(-1, input_var2.size(2), input_var2.size(3), input_var2.size(4))
 
@@ -72,15 +74,15 @@ def train(cfg, loader, model, criterion, optimizer, epoch_index, device=torch.de
 
         if episode_index % cfg.print_freq == 0 and episode_index != 0:
             print('Epoch-({0}): [{1}/{2}]\t'
-				'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-				'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-				'Loss {loss.val:.3f} ({loss.avg:.3f})\t'
-				'Prec@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
-					epoch_index, episode_index, len(loader), batch_time=batch_time, data_time=data_time, loss=losses, top1=top1))
+                'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                'Loss {loss.val:.3f} ({loss.avg:.3f})\t'
+                'Prec@1 {top1.val:.3f} ({top1.avg:.3f})'.format(
+                    epoch_index, episode_index, len(loader), batch_time=batch_time, data_time=data_time, loss=losses, top1=top1))
     
     return top1.avg, losses.avg
 
-@torch.inference_mode
+@torch.inference_mode()
 def validate(cfg, loader, model, criterion, epoch_index, best_prec1, device=torch.device("cpu")):
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -126,11 +128,11 @@ def validate(cfg, loader, model, criterion, epoch_index, best_prec1, device=torc
 @hydra.main(config_path=f"{ROOT}/configs", config_name="main", version_base=None)
 def main(cfg: DictConfig):
     cfg = cfg.train
-    device = torch.device("cuda" if (torch.cuda.is_available() and cfg.train.cuda) else "cpu")
+    device = torch.device("cuda" if (torch.cuda.is_available() and cfg.cuda) else "cpu")
     best_prec1 = 0
     model = define_model(encoder_model=cfg.encoder_model, classifier_model=cfg.classifier_model, norm="batch",
                          way_num=cfg.way_num, shot_num=cfg.shot_num, init_type='normal', use_gpu=cfg.cuda)
-    model.to(device)
+    # model.to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     if cfg.adam:
         optimizer = optim.Adam(model.parameters(), lr=cfg.lr, betas=(cfg.beta1, 0.9), weight_decay=0.0005)
@@ -177,21 +179,22 @@ def main(cfg: DictConfig):
 
 
             if is_best:
-                save_checkpoint(
-                    {
+                save_path = f"{ROOT}/{cfg.outf}"
+                os.makedirs(save_path, exist_ok=True)
+                save_checkpoint({
                         'epoch_index': epoch,
                         'encoder_model': cfg.encoder_model,
                         'classifier_model': cfg.classifier_model,
                         'model': model.state_dict(),
                         'best_prec1': best_prec1,
                         'optimizer' : optimizer.state_dict(),
-                    }, f"{ROOT}/{cfg.outf}/model_best.pth.tar")
+                    }, save_path)
                 
             mlflow.log_metrics({
-                "train_prec1": prec1_train,
-                "train_loss": train_loss,
-                "val_prec1": prec1_val,
-                "val_loss": val_loss
+                "train_prec1": float(prec1_train),
+                "train_loss": float(train_loss),
+                "val_prec1": float(prec1_val),
+                "val_loss": float(val_loss)
             }, step=epoch)
         
         mlflow.log_params(cfg)

@@ -60,7 +60,7 @@ class Conv64F(nn.Module):
 
 	def forward(self, x):
 		
-		out = self.features(x)  # 64 * 5 * 5                                           
+		out = self.features(x)  # 64 * 5 * 5                                        
 		
 		return out
 
@@ -89,6 +89,11 @@ class Conv64F_Local(nn.Module):
 			nn.BatchNorm2d(64),
 			nn.LeakyReLU(0.2, True),
 			nn.MaxPool2d(kernel_size=2, stride=2),                  # 64*21*21
+            
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+			nn.BatchNorm2d(64),
+			nn.LeakyReLU(0.2, True),
+			nn.MaxPool2d(kernel_size=2, stride=2),  
 
 
 			nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),

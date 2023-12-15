@@ -198,11 +198,8 @@ class Fewshot_model(nn.Module):
 
 
 	def forward(self, input1, input2, is_feature=False):
-		
-		# pdb.set_trace()
 		x1 = self.features(input1)      # query:       75 * 64 * 21 * 21   
 		x2 = self.features(input2)      # support set: 25 * 64 * 21 * 21  
-		
 		out = self.classifier(x1, x2)
 
 		if is_feature:
