@@ -1,4 +1,3 @@
 defaults:
   - _self_
-  - hyps: [hyperparameter]
   - train: [train]

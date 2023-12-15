@@ -29,6 +29,7 @@ class FewShotDataset(Dataset):
 		self.transform = transform
 		self.support_transform = support_transform
 		self.loader = loader
+		self.label_mode = opt.label_mode
 		self.way_num = opt.way_num
 		self.shot_num = opt.shot_num
 		self.query_num = opt.query_num
@@ -39,6 +40,7 @@ class FewShotDataset(Dataset):
 
 		assert (mode in ['train', 'val'])
 
+		generate_train_and_val_dataframe(self.data_dir, self.label_mode)
 		
 		if mode == 'train':
 			csv_path    = os.path.join( self.data_dir, 'train.csv')

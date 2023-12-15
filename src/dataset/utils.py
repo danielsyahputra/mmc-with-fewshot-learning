@@ -3,6 +3,18 @@ import csv
 import random
 from PIL import Image
 
+import os
+import glob
+import pyrootutils
+import pandas as pd
+
+ROOT = pyrootutils.setup_root(
+    search_from=os.path.dirname(os.path.realpath('__file__')),
+    indicator=["requirements.txt"],
+    pythonpath=True,
+    dotenv=True,
+)
+
 def episode_sampling(data_dir, class_list, class_img_dict, episode_num, way_num=5, shot_num=5, query_num=15):
 	'''
 		Random constructing episodes from the dataset
@@ -71,3 +83,34 @@ def load_csv2dict(csv_path):
 	class_to_idx = {class_list[i]: i for i in range(len(class_list))}
 
 	return class_img_dict, class_list, class_to_idx
+
+def generate_train_and_val_dataframe(data_path, label_mode):
+	def generate_dataframe(data_path):
+		data = {
+			"filename": [],
+			"label": []
+		}
+		for path in glob.glob(data_path):
+			splitted = path.split("/")
+			splitted = splitted[-1].split("_")
+			data["filename"].append(path)
+			if label_mode == "make":
+				label = splitted[2]
+			elif label_mode == "model":
+				label = splitted[3]
+			elif label_mode == "color":
+				label = splitted[4]
+			elif label_mode == "make_model":
+				label = "_".join(splitted[2:4])
+			elif label_mode == "make_model_color":
+				label = "_".join(splitted[2:5])
+			data['label'].append(label)
+		return pd.DataFrame(data)
+	
+	data_path = f"{ROOT}/{data_path}"
+	train_path = f"{data_path}/train/*/*.jpg"
+	val_path = f"{data_path}/val/*/*.jpg"
+	df_train = generate_dataframe(train_path)
+	df_val = generate_dataframe(val_path)
+	df_train.to_csv(f"{ROOT}/dataset/train.csv", index=False)
+	df_val.to_csv(f"{ROOT}/dataset/val.csv", index=False)

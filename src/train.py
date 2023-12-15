@@ -128,6 +128,8 @@ def validate(cfg, loader, model, criterion, epoch_index, best_prec1, device=torc
 @hydra.main(config_path=f"{ROOT}/configs", config_name="main", version_base=None)
 def main(cfg: DictConfig):
     cfg = cfg.train
+    cfg.run_name = f"{cfg.label_mode}_{cfg.encoder_model}_{cfg.classifier_model}_{cfg.imageSize}"
+    cfg.outf = f"runs/{cfg.run_name}"
     device = torch.device("cuda" if (torch.cuda.is_available() and cfg.cuda) else "cpu")
     best_prec1 = 0
     model = define_model(encoder_model=cfg.encoder_model, classifier_model=cfg.classifier_model, norm="batch",
