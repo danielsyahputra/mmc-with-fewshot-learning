@@ -4,7 +4,7 @@ mode: train
 label_mode: make # ["make", "model", "color", "make_model", "make_model_color"]
 outf: "runs/${hyps.run_name}"
 resume: False
-encoder_model: Conv64F_Local
+encoder_model: ResNet10
 classifier_model: ProtoNet
 workers: 0
 
@@ -20,7 +20,7 @@ testepisodeSize: 1
 epochs: 30
 start_epoch: 1
 current_epoch: -1
-episode_train_num: 3000
+episode_train_num: 5000
 episode_val_num: 500
 episode_test_num: 500
 way_num: 5
@@ -30,7 +30,7 @@ aug_shot_num: 20
 neighbor_k: 3
 
 # Other parameters
-lr: 0.001
+lr: 0.05
 cosine: True
 lr_decay_epochs: [10, 20]
 lr_decay_rate: 0.1

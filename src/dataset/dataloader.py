@@ -173,36 +173,14 @@ def get_dataloader(opt: DictConfig, modes):
 	loaders = []
 	for mode in modes:
 
-		if opt.train_aug and mode == 'train':
-
-			transform = transforms.Compose([
-				transforms.RandomResizedCrop(opt.imageSize),
+		transform = transforms.Compose([
+				transforms.Resize((opt.imageSize, opt.imageSize)),
 				transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
 				transforms.RandomHorizontalFlip(),
 				transforms.ToTensor(),
-				transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+				# transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 				# transforms.Normalize(mean=mean, std=std)
-			])
-
-		elif opt.imageSize == 224:
-
-			transform = transforms.Compose([
-				transforms.Resize(256),
-				transforms.CenterCrop(opt.imageSize),
-				transforms.ToTensor(),
-				transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-				# transforms.Normalize(mean=mean, std=std)
-			])
-
-		elif opt.imageSize == 84:
-	  
-			transform = transforms.Compose([
-				transforms.Resize(92),
-				transforms.CenterCrop(opt.imageSize),
-				transforms.ToTensor(),
-				transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-				# transforms.Normalize(mean=mean, std=std)
-			])
+		])
 
 
 		""" Use to generate additional support set"""
@@ -211,7 +189,7 @@ def get_dataloader(opt: DictConfig, modes):
 				transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
 				transforms.RandomHorizontalFlip(),
 				transforms.ToTensor(),
-				transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+				# transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 				# transforms.Normalize(mean=mean, std=std)
 			])
 	
